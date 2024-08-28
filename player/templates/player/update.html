@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Player Update
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h1>Player Update</h1>
+    <br>
+    {% if messages %}
+    {% for message in messages %}
+        <h2 style="color: red">⚠️{{ message }}⚠️</h2>
+    {% endfor %}
+    {% endif %}
+    <br>
+    <form method="post" action="/player/update/">
+        {% csrf_token %}
+        {{ form }}
+        <label for="update_name"> nickname: </label>
+        <input id="update_name" type="text" name="update_name" value="{{ user.nickname }}">
+        <br><br>
+        <label for="update_email"> email: </label>
+        <input id="update_email" type="email" name="update_email" value="{{ user.email }}">
+        <br><br>
+        <button type="submit" name="login">Update</button>
+    </form>
+    <br><br>
+{% endblock %}
