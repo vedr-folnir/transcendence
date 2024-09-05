@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from .otp import send_otp, create_otp_code, create_qr_code
-from .forms import RegisterForm, PhoneForm
+from .forms import RegisterForm, PhoneForm, ChangePasswordForm, UpdateForm
 from .models import Player
 import pyotp
 import requests
@@ -18,6 +18,7 @@ def register_view(request):
             user = form.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
+            user.nickname = user.username
             login(request, user)
             return redirect(f'/player/success/?username={user.username}')
     else:
@@ -51,6 +52,15 @@ def login_view(request):
                     send_otp(request, totp, method='sms')
                 elif otp_method == 'email':
                     send_otp(request, totp, method='email')
+                elif otp_method == 'no':
+                    connected_user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
+                    if connected_user is not None:
+                        #return render(request, 'player/weird.html', {'username': request.POST.get('username'), 'password': request.POST.get('password')})
+                        login(request, connected_user)
+                        return redirect(f'/player/account/?username={user.username}')                  
+                    else:
+                        form = AuthenticationForm()
+                        return render(request, 'player/login.html', {"form": form})
                 return redirect('/player/otp/')
             #elif 'login_with_42' in request.POST: 
              #   redirect_uri = settings.FT42_REDIRECT_URI
@@ -189,22 +199,21 @@ def logout_view(request):
 @login_required
 def update(request):
     user = request.user
+
     if request.method == 'POST':
-        user.nickname = request.POST.get('update_name')
-        user.email = request.POST.get('update_email')
-        user.save()
-        return redirect(f'/player/account/?username={user.username}')
+        form = UpdateForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect(f'/player/account/?username={user.username}')
     else:
-        return render(request, 'player/update.html', {'user':user})
+        form = UpdateForm(instance=user)
+    return render(request, 'player/update.html', {'form': form})
 
-
-def create_password(request):
+@login_required
+def update_password(request):
     user = request.user
     if request.method == 'POST':
-        if form.is_valid():
-            return redirect(f'/player/account/?username={user.username}')
-        else:
-            return redirect(f'/player/account/?username={user.username}')
+        return redirect(f'/player/account/?username={user.username}')
     else:
-        form = SetPasswordForm(user)
-    return render(request, 'player/create_password.html', {"form": form})
+        form = ChangePasswordForm(user)
+        return render(request, 'player/update_password.html', {"form": form})

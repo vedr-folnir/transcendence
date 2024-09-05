@@ -1,7 +1,17 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from phonenumbers.phonenumberutil import is_valid_number, parse
 from .models import Player
+
+class ChangePasswordForm(SetPasswordForm):
+    class Meta:
+        model = Player
+        fields = ['new_password1', 'new_password2']
+
+class UpdateForm(forms.ModelForm):
+    class Meta:
+        model = Player
+        fields = ['nickname', 'email', 'phone_number']
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(

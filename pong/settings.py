@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 # 42 API credentials
 FT42_CLIENT_ID = 'u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996'
-FT42_CLIENT_SECRET = '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'
+FT42_CLIENT_SECRET = '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'
 FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
 
 # CSRF settings

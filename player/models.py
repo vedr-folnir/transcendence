@@ -8,7 +8,7 @@ class Player(AbstractUser):
     phone_number = PhoneNumberField(blank=True, null=True)
     win = models.IntegerField(default=0)
     lose = models.IntegerField(default=0)
-    nickname = models.TextField(blank=True, null=True)
+    nickname = models.CharField(blank=True, null=True, max_length=30)
     def __str__(self):
         return self.username
     

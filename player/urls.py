@@ -13,6 +13,5 @@ urlpatterns = [
     path('auth/42/callback/', views.auth_42_callback, name='auth_42_callback'),
     path('logout/', views.logout_view, name='logout'),
     path('update/', views.update, name='update'),
-    path('update/create_password', views.create_password, name='create_password'),
-    path('update/password', auth_views.PasswordChangeView.as_view(), name='update_password'),
+    path('update/password', views.update_password, name='update_password'),
 ]
